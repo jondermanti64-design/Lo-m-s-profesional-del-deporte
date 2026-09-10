@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Deportivo Pro - Análisis Total</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚽ Simulador Deportivo Pro</h1>
+            <p>Motor de Análisis y Predicción Matemática Completa (Basado en tus Estadísticas)</p>
+        </header>
+
+        <div class="card-grid">
+            <!-- EQUIPO LOCAL -->
+            <div class="team-card home-card">
+                <h2>🏠 Equipo Local</h2>
+                
+                <div class="form-group">
+                    <label>Nombre del Equipo</label>
+                    <input type="text" id="home-name" value="Fenerbahçe">
+                </div>
+
+                <h3>📊 Goles y xG</h3>
+                <div class="form-group"><label>Goles Marcados Promedio</label><input type="number" step="0.1" id="home-scored" value="1.6"></div>
+                <div class="form-group"><label>Goles Concedidos Promedio</label><input type="number" step="0.1" id="home-conceded" value="0.9"></div>
+                <div class="form-group"><label>xG (Goles Esperados a Favor)</label><input type="number" step="0.01" id="home-xg" value="1.78"></div>
+                <div class="form-group"><label>xGA (Goles Esperados en Contra)</label><input type="number" step="0.01" id="home-xga" value="1.22"></div>
+
+                <h3>🎯 Tiros Realizados</h3>
+                <div class="form-group"><label>Remates / Partido</label><input type="number" step="0.1" id="home-shots" value="15.5"></div>
+                <div class="form-group"><label>Tiros a Puerta / Partido</label><input type="number" step="0.1" id="home-sot" value="6.5"></div>
+                <div class="form-group"><label>Remates Fuera / Partido</label><input type="number" step="0.1" id="home-shots-off" value="9.0"></div>
+                <div class="form-group"><label>Remates por Gol (Conversión)</label><input type="number" step="0.1" id="home-shots-per-goal" value="10.0"></div>
+
+                <h3>📐 Córners</h3>
+                <div class="form-group"><label>Córners Ganados / Partido</label><input type="number" step="0.1" id="home-corners-won" value="6.3"></div>
+                <div class="form-group"><label>Córners Perdidos / Partido</label><input type="number" step="0.1" id="home-corners-lost" value="3.7"></div>
+
+                <h3>⚡ Posesión, Faltas y Offsides</h3>
+                <div class="form-group"><label>Posesión Media (%)</label><input type="number" step="0.1" id="home-poss" value="56"></div>
+                <div class="form-group"><label>Faltas Cometidas / Partido</label><input type="number" step="0.1" id="home-fouls" value="13.7"></div>
+                <div class="form-group"><label>Faltas Recibidas / Partido</label><input type="number" step="0.1" id="home-fouled" value="12.6"></div>
+                <div class="form-group"><label>Prob. Offside > 2.5 (%)</label><input type="number" step="1" id="home-off25" value="78"></div>
+                <div class="form-group"><label>Prob. Offside > 3.5 (%)</label><input type="number" step="1" id="home-off35" value="56"></div>
+            </div>
+
+            <!-- EQUIPO VISITANTE -->
+            <div class="team-card away-card">
+                <h2>✈️ Equipo Visitante</h2>
+                
+                <div class="form-group">
+                    <label>Nombre del Equipo</label>
+                    <input type="text" id="away-name" value="Roma">
+                </div>
+
+                <h3>📊 Goles y xG</h3>
+                <div class="form-group"><label>Goles Marcados Promedio</label><input type="number" step="0.1" id="away-scored" value="2.4"></div>
+                <div class="form-group"><label>Goles Concedidos Promedio</label><input type="number" step="0.1" id="away-conceded" value="1.4"></div>
+                <div class="form-group"><label>xG (Goles Esperados a Favor)</label><input type="number" step="0.01" id="away-xg" value="1.88"></div>
+                <div class="form-group"><label>xGA (Goles Esperados en Contra)</label><input type="number" step="0.01" id="away-xga" value="1.48"></div>
+
+                <h3>🎯 Tiros Realizados</h3>
+                <div class="form-group"><label>Remates / Partido</label><input type="number" step="0.1" id="away-shots" value="15.5"></div>
+                <div class="form-group"><label>Tiros a Puerta / Partido</label><input type="number" step="0.1" id="away-sot" value="5.8"></div>
+                <div class="form-group"><label>Remates Fuera / Partido</label><input type="number" step="0.1" id="away-shots-off" value="10.0"></div>
+                <div class="form-group"><label>Remates por Gol (Conversión)</label><input type="number" step="0.1" id="away-shots-per-goal" value="6.5"></div>
+
+                <h3>📐 Córners</h3>
+                <div class="form-group"><label>Córners Ganados / Partido</label><input type="number" step="0.1" id="away-corners-won" value="5.3"></div>
+                <div class="form-group"><label>Córners Perdidos / Partido</label><input type="number" step="0.1" id="away-corners-lost" value="3.9"></div>
+
+                <h3>⚡ Posesión, Faltas y Offsides</h3>
+                <div class="form-group"><label>Posesión Media (%)</label><input type="number" step="0.1" id="away-poss" value="60"></div>
+                <div class="form-group"><label>Faltas Cometidas / Partido</label><input type="number" step="0.1" id="away-fouls" value="11.9"></div>
+                <div class="form-group"><label>Faltas Recibidas / Partido</label><input type="number" step="0.1" id="away-fouled" value="12.7"></div>
+                <div class="form-group"><label>Prob. Offside > 2.5 (%)</label><input type="number" step="1" id="away-off25" value="67"></div>
+                <div class="form-group"><label>Prob. Offside > 3.5 (%)</label><input type="number" step="1" id="away-off35" value="44"></div>
+            </div>
+        </div>
+
+        <div class="action-container">
+            <button onclick="runSimulation()" class="sim-btn">🚀 Ejecutar Simulación Completa</button>
+        </div>
+
+        <!-- RESULTADOS -->
+        <div id="results" class="results-container hidden">
+            <h2>📊 Resultado del Análisis y Simulación</h2>
+            <div class="score-board">
+                <span id="res-home-name">Local</span>
+                <span id="res-score" class="score-number">0 - 0</span>
+                <span id="res-away-name">Visitante</span>
+            </div>
+
+            <div class="stats-table-wrapper">
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th>Métrica Evaluada</th>
+                            <th id="th-home">Local</th>
+                            <th id="th-away">Visitante</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stats-body">
+                        <!-- Inyectado por JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+                                                                                  </html>
+                                                                                  
