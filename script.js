@@ -1,20 +1,3 @@
-function poissonRandom(lambda) {
-    let L = Math.exp(-lambda);
-    let k = 0;
-    let p = 1;
-    do {
-        k++;
-        p *= Math.random();
-    } while (p > L);
-    return k - 1;
-}
-
-function simulateMetric(baseValue, variance = 1.8) {
-    let randomOffset = (Math.random() * (variance * 2)) - variance;
-    let simulated = Math.round(baseValue + randomOffset);
-    return Math.max(0, simulated);
-}
-
 function runSimulation() {
     // 1. Lectura de Datos - Local
     const homeName = document.getElementById('home-name').value;
@@ -55,64 +38,65 @@ function runSimulation() {
     let homePoss = totalPossRaw > 0 ? (homePossInput / totalPossRaw) : 0.5;
     let awayPoss = totalPossRaw > 0 ? (awayPossInput / totalPossRaw) : 0.5;
 
-    // Factores de Dominio Territorial (Rango aproximado 0.75 a 1.25)
+    // Factores de Dominio Territorial exactos
     let homeTerritoryFactor = homePoss / 0.5; 
     let awayTerritoryFactor = awayPoss / 0.5;
 
-    // 4. Coeficiente de Ritmo Global (Tempo del Partido)
+    // 4. Coeficiente de Ritmo Global determinista
     let globalTempo = ((homeShots + awayShots) / 30); 
     globalTempo = Math.max(0.7, Math.min(1.3, globalTempo));
 
-    // 5. Motor Conjunto de Goles (xG Cruzado + Calidad de Conversión + Ritmo)
+    // 5. Eficiencia de Precisión de Tiros a Puerta (SOT / Tiros Totales)
+    let homeAccuracyRatio = homeSot / Math.max(1, homeShots);
+    let awayAccuracyRatio = awaySot / Math.max(1, awayShots);
+
+    // 6. Motor Cruzado Total de Goles (xG + Conversión + Territorio + Balón Parado por Faltas + Eficiencia)
     let convH = 10 / Math.max(4, homeShotsPerGoal);
     let convA = 10 / Math.max(4, awayShotsPerGoal);
     
-    let finalHomeXg = (((homeXg + awayXga + homeScored + awayConceded) / 4) * convH) * homeTerritoryFactor * 0.5 + (((homeXg + awayXga)/2)*0.5);
-    let finalAwayXg = (((awayXg + homeXga + awayScored + homeConceded) / 4) * convA) * awayTerritoryFactor * 0.5 + (((awayXg + homeXga)/2)*0.5);
+    // Impacto de faltas del rival concediendo peligro (balón parado)
+    let homeSetPieceBonus = (awayFouls / 20) * 0.1;
+    let awaySetPieceBonus = (homeFouls / 20) * 0.1;
+
+    let finalHomeXg = (((homeXg + awayXga + homeScored + awayConceded) / 4) * convH * homeAccuracyRatio) * homeTerritoryFactor * 0.5 + (((homeXg + awayXga)/2)*0.5) + homeSetPieceBonus;
+    let finalAwayXg = (((awayXg + homeXga + awayScored + homeConceded) / 4) * convA * awayAccuracyRatio) * awayTerritoryFactor * 0.5 + (((awayXg + homeXga)/2)*0.5) + awaySetPieceBonus;
     
     finalHomeXg = Math.max(0.1, finalHomeXg);
     finalAwayXg = Math.max(0.1, finalAwayXg);
 
-    const homeGoals = poissonRandom(finalHomeXg);
-    const awayGoals = poissonRandom(finalAwayXg);
+    let homeGoals = Math.round(finalHomeXg);
+    let awayGoals = Math.round(finalAwayXg);
 
-    // 6. Simulación Conjunta de Tiros (Afectados por Posesión y Ritmo)
-    let targetHomeShots = homeShots * homeTerritoryFactor * globalTempo;
-    let targetAwayShots = awayShots * awayTerritoryFactor * globalTempo;
+    // 7. Tiros Exactos (Cruzados con Posesión, Ritmo y Desgaste Defensivo por Faltas)
+    let homeWearPenalty = (awayPoss < 0.45 && awayFouls > 13) ? 1.08 : 1.0;
+    let awayWearPenalty = (homePoss < 0.45 && homeFouls > 13) ? 1.08 : 1.0;
 
-    const simHomeShots = simulateMetric(targetHomeShots, 2.0);
-    const simAwayShots = simulateMetric(targetAwayShots, 2.0);
+    let targetHomeShots = Math.round(homeShots * homeTerritoryFactor * globalTempo * homeWearPenalty);
+    let targetAwayShots = Math.round(awayShots * awayTerritoryFactor * globalTempo * awayWearPenalty);
 
-    let homeSotRatio = homeSot / Math.max(1, homeShots);
-    let awaySotRatio = awaySot / Math.max(1, awayShots);
+    const simHomeSot = Math.min(targetHomeShots, Math.round(targetHomeShots * homeAccuracyRatio));
+    const simAwaySot = Math.min(targetAwayShots, Math.round(targetAwayShots * awayAccuracyRatio));
 
-    const simHomeSot = Math.min(simHomeShots, Math.max(0, Math.round(simHomeShots * homeSotRatio)));
-    const simAwaySot = Math.min(simAwayShots, Math.max(0, Math.round(simAwayShots * awaySotRatio)));
+    const simHomeShotsOff = Math.max(0, targetHomeShots - simHomeSot);
+    const simAwayShotsOff = Math.max(0, targetAwayShots - simAwaySot);
 
-    const simHomeShotsOff = Math.max(0, simHomeShots - simHomeSot);
-    const simAwayShotsOff = Math.max(0, simAwayShots - simAwaySot);
+    // 8. Córners Exactos Conectados a la Presión
+    let baseHomeCorners = Math.round(((homeCornersWon + awayCornersLost) / 2) * homeTerritoryFactor);
+    let baseAwayCorners = Math.round(((awayCornersWon + homeCornersLost) / 2) * awayTerritoryFactor);
 
-    // 7. Córners Conectados al Volumen de Tiros y Presión
-    let baseHomeCorners = ((homeCornersWon + awayCornersLost) / 2) * homeTerritoryFactor;
-    let baseAwayCorners = ((awayCornersWon + homeCornersLost) / 2) * awayTerritoryFactor;
-    const simHomeCorners = simulateMetric(baseHomeCorners, 1.4);
-    const simAwayCorners = simulateMetric(baseAwayCorners, 1.4);
-
-    // 8. Faltas y Tarjetas Cruzadas por Presión Defensiva
-    let targetHomeFouls = homeFouls * awayTerritoryFactor; // Si el rival domina, corres detrás y haces más faltas
-    let targetAwayFouls = awayFouls * homeTerritoryFactor;
-    const simHomeFouls = simulateMetric(targetHomeFouls, 1.8);
-    const simAwayFouls = simulateMetric(targetAwayFouls, 1.8);
+    // 9. Faltas y Tarjetas Exactas Cruzadas
+    let targetHomeFouls = Math.round(homeFouls * awayTerritoryFactor);
+    let targetAwayFouls = Math.round(awayFouls * homeTerritoryFactor);
     
-    const totalCards = ((simHomeFouls + simAwayFouls) / 7.2).toFixed(1);
+    const totalCards = ((targetHomeFouls + targetAwayFouls) / 7.2).toFixed(1);
 
-    // 9. Offsides Combinados por Estilo de Línea Defensiva
+    // 10. Offsides Combinados Exactos
     const combinedOff25 = Math.round((homeOff25 * awayTerritoryFactor + awayOff25 * homeTerritoryFactor) / 2);
     const combinedOff35 = Math.round((homeOff35 * awayTerritoryFactor + awayOff35 * homeTerritoryFactor) / 2);
-    const finalOff25 = Math.min(95, Math.max(10, combinedOff25));
-    const finalOff35 = Math.min(90, Math.max(5, combinedOff35));
+    const finalOff25 = Math.min(100, Math.max(0, combinedOff25));
+    const finalOff35 = Math.min(100, Math.max(0, combinedOff35));
 
-    // 10. Pintar Resultados en Pantalla
+    // 11. Pintar Resultados en la Tabla Perfecta
     document.getElementById('res-home-name').innerText = homeName;
     document.getElementById('res-away-name').innerText = awayName;
     document.getElementById('res-score').innerText = `${homeGoals} - ${awayGoals}`;
@@ -124,11 +108,11 @@ function runSimulation() {
     statsBody.innerHTML = `
         <tr><td><strong>Goles Esperados (xG Conjunto)</strong></td><td>${finalHomeXg.toFixed(2)}</td><td>${finalAwayXg.toFixed(2)}</td></tr>
         <tr><td><strong>Posesión de Balón</strong></td><td>${Math.round(homePoss * 100)}%</td><td>${Math.round(awayPoss * 100)}%</td></tr>
-        <tr><td><strong>Remates Totales</strong></td><td>${simHomeShots}</td><td>${simAwayShots}</td></tr>
+        <tr><td><strong>Remates Totales</strong></td><td>${targetHomeShots}</td><td>${targetAwayShots}</td></tr>
         <tr><td><strong>Tiros a Puerta</strong></td><td>${simHomeSot}</td><td>${simAwaySot}</td></tr>
         <tr><td><strong>Remates Fuera</strong></td><td>${simHomeShotsOff}</td><td>${simAwayShotsOff}</td></tr>
-        <tr><td><strong>Tiros de Esquina (Córners)</strong></td><td>${simHomeCorners}</td><td>${simAwayCorners}</td></tr>
-        <tr><td><strong>Faltas Cometidas</strong></td><td>${simHomeFouls}</td><td>${simAwayFouls}</td></tr>
+        <tr><td><strong>Tiros de Esquina (Córners)</strong></td><td>${baseHomeCorners}</td><td>${baseAwayCorners}</td></tr>
+        <tr><td><strong>Faltas Cometidas</strong></td><td>${targetHomeFouls}</td><td>${targetAwayFouls}</td></tr>
         <tr><td><strong>Tarjetas Totales Estimadas</strong></td><td colspan="2" style="text-align: center; color: #facc15; font-weight: bold;">~ ${totalCards} Tarjetas</td></tr>
         <tr><td><strong>Probabilidad Offsides > 2.5</strong></td><td colspan="2" style="text-align: center; color: #38bdf8; font-weight: bold;">${finalOff25}% de probabilidad</td></tr>
         <tr><td><strong>Probabilidad Offsides > 3.5</strong></td><td colspan="2" style="text-align: center; color: #38bdf8; font-weight: bold;">${finalOff35}% de probabilidad</td></tr>
