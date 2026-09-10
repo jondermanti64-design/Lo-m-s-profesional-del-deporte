@@ -1,0 +1,181 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #0f172a;
+    color: #f8fafc;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-size: 2.2rem;
+    color: #38bdf8;
+    margin-bottom: 8px;
+}
+
+header p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.team-card {
+    background-color: #1e293b;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    border-top: 4px solid #38bdf8;
+}
+
+.away-card {
+    border-top-color: #f59e0b;
+}
+
+.team-card h2 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 8px;
+}
+
+.team-card h3 {
+    font-size: 1rem;
+    color: #38bdf8;
+    margin: 15px 0 8px 0;
+    border-left: 3px solid #38bdf8;
+    padding-left: 8px;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.8rem;
+    color: #cbd5e1;
+    margin-bottom: 3px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 7px 10px;
+    background-color: #0f172a;
+    border: 1px solid #475569;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #38bdf8;
+}
+
+.action-container {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.sim-btn {
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+    transition: transform 0.2s, background 0.2s;
+}
+
+.sim-btn:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #0369a1, #075985);
+}
+
+.results-container {
+    background-color: #1e293b;
+    border-radius: 12px;
+    padding: 25px;
+    margin-top: 20px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+    border: 1px solid #334155;
+}
+
+.results-container h2 {
+    text-align: center;
+    color: #38bdf8;
+    margin-bottom: 20px;
+}
+
+.score-board {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #0f172a;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.score-number {
+    font-size: 2.2rem;
+    color: #4ade80;
+    background: #1e293b;
+    padding: 5px 20px;
+    border-radius: 8px;
+    border: 1px solid #334155;
+}
+
+.stats-table-wrapper {
+    overflow-x: auto;
+}
+
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.stats-table th, .stats-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #334155;
+}
+
+.stats-table th {
+    background-color: #0f172a;
+    color: #38bdf8;
+}
+
+.hidden {
+    display: none;
+}
